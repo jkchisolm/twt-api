@@ -13,11 +13,11 @@ public class AppDbContext : DbContext
         _configuration = configuration;
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-    {
-        // connect to postgres
-        options.UseNpgsql(_configuration.GetConnectionString("WebApiDatabase"));
-    }
+    // protected override void OnConfiguring(DbContextOptionsBuilder options)
+    // {
+    //     // connect to postgres
+    //     options.UseNpgsql(_configuration.GetConnectionString("WebApiDatabase"));
+    // }
     
     public DbSet<Post> Posts { get; set; }
 }

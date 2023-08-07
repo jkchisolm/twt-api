@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Microsoft.EntityFrameworkCore;
 using TwitterAPI.Data;
 using TwitterAPI.Interfaces;
 using TwitterAPI.Repositories;
@@ -6,6 +7,7 @@ using TwitterAPI.Repositories;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var conn = builder.Configuration.GetConnectionString("WebApiDatabase");
 
 builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(x =>
@@ -14,7 +16,7 @@ builder.Services.AddScoped<IPostRepository, PostRepository>();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<AppDbContext>();
+builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(conn));
 
 var app = builder.Build();
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
