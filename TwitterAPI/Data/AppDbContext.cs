@@ -6,7 +6,7 @@ using TwitterAPI.Models;
 
 namespace TwitterAPI.Data;
 
-public class AppDbContext : IdentityUserContext<User>
+public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
     private readonly IConfiguration _configuration;
 
@@ -18,11 +18,11 @@ public class AppDbContext : IdentityUserContext<User>
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);
-        builder.Entity<User>().Property(e => e.Handle).HasMaxLength(50);
+        builder.Entity<ApplicationUser>().Property(e => e.DisplayName).HasMaxLength(50);
         
-        builder.Entity<User>()
+        builder.Entity<ApplicationUser>()
             .HasMany(u => u.Posts)
-            .WithOne(p => p.User)
+            .WithOne(p => p.ApplicationUser)
             .HasForeignKey(p => p.UserId)
             .HasPrincipalKey(u => u.Id)
             .HasConstraintName("FK_Posts_AspNetUsers_UserId");

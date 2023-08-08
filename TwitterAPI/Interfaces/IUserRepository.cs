@@ -7,7 +7,7 @@ namespace TwitterAPI.Interfaces;
 
 public interface IUserRepository
 {
-    ICollection<User> GetUsers();
-    Task<ActionResult<User>> GetUserByName(string userName);
+    ICollection<ApplicationUser> GetUsers();
+    Task<ActionResult<ApplicationUser>> GetUserByName(string userName);
     RegisterUserReturnType RegisterUser(UserDto userInfo, string password);
 }

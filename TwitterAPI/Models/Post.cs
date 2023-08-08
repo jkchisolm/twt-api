@@ -9,5 +9,5 @@ public class Post
     
     // Properties for the author
     public string UserId { get; set; }
-    public User User { get; set; } = null!;
+    public ApplicationUser ApplicationUser { get; set; } = null!;
 }

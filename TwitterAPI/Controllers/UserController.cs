@@ -12,9 +12,9 @@ namespace TwitterAPI.Controllers;
 public class UserController : Controller
 {
     private readonly IUserRepository _userRepository;
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public UserController(IUserRepository userRepository, UserManager<User> userManager)
+    public UserController(IUserRepository userRepository, UserManager<ApplicationUser> userManager)
     {
         _userRepository = userRepository;
         _userManager = userManager;
@@ -71,29 +71,29 @@ public class UserController : Controller
         return Created("", "User successfully created.");
     }
     
-    private static UserDto FromUser(User user)
+    private static UserDto FromUser(ApplicationUser applicationUser)
     {
         return new UserDto
         {
-            Id = user.Id,
-            UserName = user.UserName,
-            Email = user.Email,
-            Handle = user.Handle,
-            BirthDate = user.BirthDate,
-            CreatedDate = user.CreatedDate,
-            Bio = user.Bio,
-            Posts = user.Posts,
+            Id = applicationUser.Id,
+            UserName = applicationUser.UserName,
+            Email = applicationUser.Email,
+            DisplayName = applicationUser.DisplayName,
+            BirthDate = applicationUser.BirthDate,
+            CreatedDate = applicationUser.CreatedDate,
+            Bio = applicationUser.Bio,
+            Posts = applicationUser.Posts,
         };
     }
     
-    private static User FromUserDto(UserDto userDto)
+    private static ApplicationUser FromUserDto(UserDto userDto)
     {
-        return new User
+        return new ApplicationUser
         {
             Id = userDto.Id,
             UserName = userDto.UserName,
             Email = userDto.Email,
-            Handle = userDto.Handle,
+            DisplayName = userDto.DisplayName,
             BirthDate = userDto.BirthDate,
             CreatedDate = DateTime.Now,
             Bio = userDto.Bio,

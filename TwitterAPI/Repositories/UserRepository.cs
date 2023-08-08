@@ -12,19 +12,19 @@ namespace TwitterAPI.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly UserManager<User> _userManager;
+    private readonly UserManager<ApplicationUser> _userManager;
 
-    public UserRepository(UserManager<User> userManager)
+    public UserRepository(UserManager<ApplicationUser> userManager)
     {
         _userManager = userManager;
     }
 
-    public ICollection<User> GetUsers()
+    public ICollection<ApplicationUser> GetUsers()
     {
         return _userManager.Users.ToList();
     }
 
-    public async Task<ActionResult<User>> GetUserByName(string userName)
+    public async Task<ActionResult<ApplicationUser>> GetUserByName(string userName)
     {
         var result = await _userManager.FindByNameAsync(userName);
         if (result == null)
@@ -37,11 +37,11 @@ public class UserRepository : IUserRepository
 
     public RegisterUserReturnType RegisterUser(UserDto userInfo, string password)
     {
-        var userToCreate = new User
+        var userToCreate = new ApplicationUser
         {
             UserName = userInfo.UserName,
             Email = userInfo.Email,
-            Handle = userInfo.Handle,
+            DisplayName = userInfo.DisplayName,
             CreatedDate = DateTime.Now,
             BirthDate = userInfo.BirthDate,
             Bio = userInfo.Bio,
