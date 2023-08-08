@@ -6,4 +6,8 @@ public class Post
     public string TextContent { get; set; } = null!;
     public DateTime CreatedDate { get; set; }
     public DateTime EditedDate { get; set; }
+    
+    // Properties for the author
+    public int UserId { get; set; }
+    public User User { get; set; } = null!;
 }

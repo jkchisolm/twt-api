@@ -8,4 +8,5 @@ public class PostDto
     public string TextContent { get; set; } = null!;
     public DateTime CreatedDate { get; set; }
     public DateTime EditedDate { get; set; }
+    public int UserId { get; set; }
 }

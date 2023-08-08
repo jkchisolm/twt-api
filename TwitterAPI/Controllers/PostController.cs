@@ -102,7 +102,8 @@ public class PostController : Controller
             Id = post.Id,
             TextContent = post.TextContent,
             CreatedDate = post.CreatedDate,
-            EditedDate = post.EditedDate
+            EditedDate = post.EditedDate,
+            UserId = post.UserId
         };
     }
     
@@ -113,7 +114,8 @@ public class PostController : Controller
             Id = postDto.Id,
             TextContent = postDto.TextContent,
             CreatedDate = DateTime.Now,
-            EditedDate = DateTime.Now 
+            EditedDate = DateTime.Now,
+            UserId = postDto.UserId
         };
     }
 }
