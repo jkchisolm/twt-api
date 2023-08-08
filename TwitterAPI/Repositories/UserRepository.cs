@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using TwitterAPI.Data;
 using TwitterAPI.Dto;
 using TwitterAPI.Interfaces;
@@ -24,17 +25,20 @@ public class UserRepository : IUserRepository
 
     public User GetUser(int userId)
     {
-        return _context.Users.FirstOrDefault(u => u.Id == userId);
+        return _context.Users.Where(u => u.Id == userId)
+            .Include(u => u.Posts).FirstOrDefault();
     }
 
     public User GetUserByEmail(string email)
     {
-        return _context.Users.FirstOrDefault(u => u.Email == email);
+        return _context.Users.Where(u => u.Email == email)
+            .Include(u => u.Posts).FirstOrDefault();
     }
 
     public User GetUserByHandle(string handle)
     {
-        return _context.Users.FirstOrDefault(u => u.Handle == handle);
+        return _context.Users.Where(u => u.Handle == handle)
+            .Include(u => u.Posts).FirstOrDefault();
     }
 
     public bool UserExists(int userId)
@@ -45,6 +49,11 @@ public class UserRepository : IUserRepository
     public bool UserExists(string email)
     {
         return _context.Users.Any(u => u.Email == email);
+    }
+
+    public bool UserExistsByHandle(string handle)
+    {
+        return _context.Users.Any(u => u.Handle == handle);
     }
 
     public bool RegisterUser(UserDto userInfo, string password)

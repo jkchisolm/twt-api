@@ -11,6 +11,7 @@ public interface IUserRepository
     User GetUserByHandle(string handle);
     bool UserExists(int userId);
     bool UserExists(string email);
+    bool UserExistsByHandle(string handle);
     bool RegisterUser(UserDto user, string password);
     UserDto LoginUser(string email, string password);
     bool UpdateUser(int userId, User updatedUser);
