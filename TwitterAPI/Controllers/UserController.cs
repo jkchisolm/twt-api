@@ -79,8 +79,8 @@ public class UserController : Controller
         return new UserDto
         {
             Id = user.Id,
-            Name = user.Name,
-            handle = user.Handle,
+            UserName = user.UserName,
+            Handle = user.Handle,
             Email = user.Email,
             CreatedDate = user.CreatedDate,
             BirthDate = user.BirthDate,
@@ -93,8 +93,8 @@ public class UserController : Controller
         return new User
         {
             Id = userDto.Id,
-            Name = userDto.Name,
-            Handle = userDto.handle,
+            UserName = userDto.UserName,
+            Handle = userDto.Handle,
             Email = userDto.Email,
             // Password = userPassword,
             CreatedDate = userDto.CreatedDate,

@@ -8,6 +8,6 @@ public class Post
     public DateTime EditedDate { get; set; }
     
     // Properties for the author
-    public int UserId { get; set; }
+    public string UserId { get; set; }
     public User User { get; set; } = null!;
 }
