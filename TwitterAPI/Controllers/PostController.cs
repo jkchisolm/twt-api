@@ -2,7 +2,6 @@ using Microsoft.AspNetCore.Mvc;
 using TwitterAPI.Dto;
 using TwitterAPI.Interfaces;
 using TwitterAPI.Models;
-using TwitterAPI.Repositories;
 
 namespace TwitterAPI.Controllers;
 
@@ -29,6 +28,26 @@ public class PostController : Controller
 
         return Ok(posts);
     }
+
+    [HttpPost]
+    [ProducesResponseType(204)]
+    [ProducesResponseType(400)]
+    public IActionResult CreatePost([FromBody] PostDto postToCreate)
+    {
+        if (postToCreate == null) return BadRequest(ModelState);
+        
+        var post = FromPostDto(postToCreate);
+        
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        
+        if (!_postRepository.CreatePost(post))
+        {
+            ModelState.AddModelError("", $"Something went wrong saving the post");
+            return StatusCode(500, ModelState);
+        }
+
+        return Ok("Post successfully created.");
+    }
     
     
     private static PostDto FromPost(Post post)
@@ -39,6 +58,17 @@ public class PostController : Controller
             TextContent = post.TextContent,
             CreatedDate = post.CreatedDate,
             EditedDate = post.EditedDate
+        };
+    }
+    
+    private static Post FromPostDto(PostDto postDto)
+    {
+        return new Post
+        {
+            Id = postDto.Id,
+            TextContent = postDto.TextContent,
+            CreatedDate = DateTime.Now,
+            EditedDate = DateTime.Now 
         };
     }
 }
