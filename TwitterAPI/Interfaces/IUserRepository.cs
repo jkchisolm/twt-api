@@ -1,20 +1,13 @@
+using Microsoft.AspNetCore.Mvc;
 using TwitterAPI.Dto;
+using TwitterAPI.Helpers;
 using TwitterAPI.Models;
 
 namespace TwitterAPI.Interfaces;
 
 public interface IUserRepository
 {
-    public ICollection<User> GetUsers();
-    User GetUser(int userId);
-    User GetUserByEmail(string email);
-    User GetUserByHandle(string handle);
-    bool UserExists(int userId);
-    bool UserExists(string email);
-    bool UserExistsByHandle(string handle);
-    bool RegisterUser(UserDto user, string password);
-    UserDto LoginUser(string email, string password);
-    bool UpdateUser(int userId, User updatedUser);
-    bool DeleteUser(int userId);
-    bool Save();
+    ICollection<User> GetUsers();
+    Task<ActionResult<User>> GetUserByName(string userName);
+    RegisterUserReturnType RegisterUser(UserDto userInfo, string password);
 }

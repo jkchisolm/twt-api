@@ -1,4 +1,6 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using TwitterAPI.Dto;
 using TwitterAPI.Interfaces;
 using TwitterAPI.Models;
@@ -10,17 +12,19 @@ namespace TwitterAPI.Controllers;
 public class UserController : Controller
 {
     private readonly IUserRepository _userRepository;
+    private readonly UserManager<User> _userManager;
 
-    public UserController(IUserRepository userRepository)
+    public UserController(IUserRepository userRepository, UserManager<User> userManager)
     {
         _userRepository = userRepository;
+        _userManager = userManager;
     }
     
     [HttpGet]
     [ProducesResponseType(200, Type = typeof(IEnumerable<UserDto>))]
     public IActionResult GetUsers()
     {
-        var users = _userRepository.GetUsers().Select(u => FromUser(u)).ToList();
+        var users = _userRepository.GetUsers();
         if (!ModelState.IsValid)
         {
             return BadRequest(ModelState);
@@ -29,15 +33,19 @@ public class UserController : Controller
         return Ok(users);
     }
 
-    [HttpGet("{userId}")]
+    [HttpGet("{userName}")]
     [ProducesResponseType(200, Type = typeof(UserDto))]
     [ProducesResponseType(400)]
     [ProducesResponseType(404)]
-    public IActionResult GetUser(int userId)
+    public async Task<ActionResult<UserDto>> GetUser(string userName)
     {
-        if (!_userRepository.UserExists(userId)) return NotFound();
-        var user = _userRepository.GetUser(userId);
-        if (!ModelState.IsValid) return BadRequest(ModelState);
+        var user = await _userManager.Users.Include(u => u.Posts)
+            .FirstOrDefaultAsync(u => u.UserName.Trim().ToUpper() == userName.Trim().ToUpper());
+        if (user == null)
+        {
+            return NotFound();
+        }
+
         return Ok(FromUser(user));
     }
 
@@ -46,60 +54,49 @@ public class UserController : Controller
     [ProducesResponseType(400)]
     [ProducesResponseType(422)]
     [ProducesResponseType(500)]
-    public IActionResult CreateUser([FromBody] UserDto userToCreate, [FromQuery] string userPassword)
+    public IActionResult RegisterUser([FromBody] UserDto userToCreate, [FromQuery] string password)
     {
-        if (_userRepository.UserExists(userToCreate.Email))
+        if (!ModelState.IsValid)
         {
-            ModelState.AddModelError("", "User with that email address already exists.");
-            return StatusCode(422, ModelState);
+            return BadRequest(ModelState);
         }
 
-        if (!_userRepository.RegisterUser(userToCreate, userPassword))
+        var registerStatus = _userRepository.RegisterUser(userToCreate, password);
+        
+        if (!registerStatus.success)
         {
-            ModelState.AddModelError("", $"Something went wrong saving the user");
-            return StatusCode(500, ModelState);
+            return BadRequest(registerStatus.errors);
         }
+        
         return Created("", "User successfully created.");
     }
     
-    [HttpPost("login")]
-    [ProducesResponseType(200, Type = typeof(UserDto))]
-    [ProducesResponseType(400)]
-    [ProducesResponseType(404)]
-    public IActionResult LoginUser([FromQuery] string userEmail, [FromQuery] string userPassword)
-    {
-        if (!_userRepository.UserExists(userEmail)) return NotFound();
-        var user = _userRepository.LoginUser(userEmail, userPassword);
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-        return Ok(user);
-    }
-
     private static UserDto FromUser(User user)
     {
         return new UserDto
         {
             Id = user.Id,
             UserName = user.UserName,
-            Handle = user.Handle,
             Email = user.Email,
-            CreatedDate = user.CreatedDate,
+            Handle = user.Handle,
             BirthDate = user.BirthDate,
-            Posts = user.Posts
+            CreatedDate = user.CreatedDate,
+            Bio = user.Bio,
+            Posts = user.Posts,
         };
     }
     
-    private static User FromUserDto(UserDto userDto, string userPassword)
+    private static User FromUserDto(UserDto userDto)
     {
         return new User
         {
             Id = userDto.Id,
             UserName = userDto.UserName,
-            Handle = userDto.Handle,
             Email = userDto.Email,
-            // Password = userPassword,
-            CreatedDate = userDto.CreatedDate,
+            Handle = userDto.Handle,
             BirthDate = userDto.BirthDate,
-            Posts = userDto.Posts
+            CreatedDate = DateTime.Now,
+            Bio = userDto.Bio,
         };
     }
 }
