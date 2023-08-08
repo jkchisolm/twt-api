@@ -73,6 +73,27 @@ public class PostController : Controller
         return Ok("Post successfully updated.");
     }
     
+    [HttpDelete]
+    [ProducesResponseType(200)]
+    [ProducesResponseType(400)]
+    public IActionResult DeletePost([FromQuery] int postId)
+    {
+        if (postId == null) return BadRequest(ModelState);
+        
+        // check if the post already exists, if not, return 404
+        if (!_postRepository.PostExists(postId)) return NotFound();
+        
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        
+        if (!_postRepository.DeletePost(postId))
+        {
+            ModelState.AddModelError("", $"Something went wrong deleting the post");
+            return StatusCode(500, ModelState);
+        }
+        
+        return Ok("Post successfully deleted.");
+    }
+    
     
     private static PostDto FromPost(Post post)
     {

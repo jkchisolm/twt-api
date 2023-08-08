@@ -9,6 +9,6 @@ public interface IPostRepository
     bool PostExists(int postId);
     bool CreatePost(Post post);
     bool UpdatePost(int postId, Post updatedPost);
-    bool DeletePost(Post post);
+    bool DeletePost(int postId);
     bool Save();
 }

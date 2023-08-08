@@ -42,9 +42,11 @@ public class PostRepository : IPostRepository
         return Save();
     }
 
-    public bool DeletePost(Post post)
+    public bool DeletePost(int postId)
     {
-        throw new NotImplementedException();
+        var post = GetPost(postId);
+        _context.Posts.Remove(post);
+        return Save();
     }
 
     public bool Save()
