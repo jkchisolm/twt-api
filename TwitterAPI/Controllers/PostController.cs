@@ -48,6 +48,30 @@ public class PostController : Controller
 
         return Ok("Post successfully created.");
     }
+
+    [HttpPut]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(400)]
+    public IActionResult EditPost([FromQuery] int postId, [FromBody] PostDto updatedPost)
+    {
+        if (postId == null) return BadRequest(ModelState);
+        if (updatedPost == null) return BadRequest(ModelState);
+        
+        // check if the post already exists, if not, return 404
+        if (!_postRepository.PostExists(postId)) return NotFound();
+
+        var post = FromPostDto(updatedPost);
+        
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        
+        if (!_postRepository.UpdatePost(postId, post))
+        {
+            ModelState.AddModelError("", $"Something went wrong updating the post");
+            return StatusCode(500, ModelState);
+        }
+        
+        return Ok("Post successfully updated.");
+    }
     
     
     private static PostDto FromPost(Post post)

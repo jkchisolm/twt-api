@@ -33,6 +33,20 @@ public class PostRepository : IPostRepository
         return Save();
     }
 
+    public bool UpdatePost(int postId, Post updatedPost)
+    {
+        var post = GetPost(postId);
+        post.TextContent = updatedPost.TextContent;
+        post.EditedDate = DateTime.Now;
+        _context.Posts.Update(post);
+        return Save();
+    }
+
+    public bool DeletePost(Post post)
+    {
+        throw new NotImplementedException();
+    }
+
     public bool Save()
     {
         var saved = _context.SaveChanges();

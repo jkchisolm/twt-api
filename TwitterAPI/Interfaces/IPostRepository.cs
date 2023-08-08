@@ -8,5 +8,7 @@ public interface IPostRepository
     Post GetPost(int postId);
     bool PostExists(int postId);
     bool CreatePost(Post post);
+    bool UpdatePost(int postId, Post updatedPost);
+    bool DeletePost(Post post);
     bool Save();
 }
