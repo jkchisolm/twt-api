@@ -63,6 +63,23 @@ public class UserRepository : IUserRepository
         return Save();
     }
 
+    public UserDto LoginUser(string email, string password)
+    {
+        var user = GetUserByEmail(email);
+        if (user == null) return null;
+        var computedHash = PasswordHasher.ComputeHash(password, user.PasswordSalt, _pepper, 3);
+        if (computedHash != user.PasswordHash) throw new Exception("Username or password did not match.");
+        return new UserDto
+        {
+            Id = user.Id,
+            Name = user.Name,
+            handle = user.Handle,
+            Email = user.Email,
+            CreatedDate = user.CreatedDate,
+            BirthDate = user.BirthDate
+        };
+    }
+
     public bool UpdateUser(int userId, User updatedUser)
     {
         throw new NotImplementedException();

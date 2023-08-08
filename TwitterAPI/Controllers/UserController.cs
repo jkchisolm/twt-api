@@ -41,7 +41,7 @@ public class UserController : Controller
         return Ok(FromUser(user));
     }
 
-    [HttpPost]
+    [HttpPost("register")]
     [ProducesResponseType(201)]
     [ProducesResponseType(400)]
     [ProducesResponseType(422)]
@@ -60,6 +60,18 @@ public class UserController : Controller
             return StatusCode(500, ModelState);
         }
         return Created("", "User successfully created.");
+    }
+    
+    [HttpPost("login")]
+    [ProducesResponseType(200, Type = typeof(UserDto))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public IActionResult LoginUser([FromQuery] string userEmail, [FromQuery] string userPassword)
+    {
+        if (!_userRepository.UserExists(userEmail)) return NotFound();
+        var user = _userRepository.LoginUser(userEmail, userPassword);
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        return Ok(user);
     }
 
     private static UserDto FromUser(User user)

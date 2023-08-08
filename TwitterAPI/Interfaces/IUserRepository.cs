@@ -12,6 +12,7 @@ public interface IUserRepository
     bool UserExists(int userId);
     bool UserExists(string email);
     bool RegisterUser(UserDto user, string password);
+    UserDto LoginUser(string email, string password);
     bool UpdateUser(int userId, User updatedUser);
     bool DeleteUser(int userId);
     bool Save();
