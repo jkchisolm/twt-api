@@ -1,3 +1,4 @@
+using TwitterAPI.Dto;
 using TwitterAPI.Models;
 
 namespace TwitterAPI.Interfaces;
@@ -10,7 +11,7 @@ public interface IUserRepository
     User GetUserByHandle(string handle);
     bool UserExists(int userId);
     bool UserExists(string email);
-    bool CreateUser(User user);
+    bool RegisterUser(UserDto user, string password);
     bool UpdateUser(int userId, User updatedUser);
     bool DeleteUser(int userId);
     bool Save();

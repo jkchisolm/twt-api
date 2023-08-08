@@ -15,6 +15,7 @@ services:
     environment:
       - ConnectionStrings__WebApiDatabase=User ID=postgres;Password=postgres;Host=app_db;Server=app_db;Port=5432;Database=TwitterDB;Integrated Security=true;Pooling=true;
       - ASPNETCORE_URLS=http://+:80
+      - PasswordHashPepper=12345678901234567890123456789012
     networks:
       - dev
         

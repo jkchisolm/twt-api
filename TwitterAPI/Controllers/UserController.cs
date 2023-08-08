@@ -29,6 +29,39 @@ public class UserController : Controller
         return Ok(users);
     }
 
+    [HttpGet("{userId}")]
+    [ProducesResponseType(200, Type = typeof(UserDto))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public IActionResult GetUser(int userId)
+    {
+        if (!_userRepository.UserExists(userId)) return NotFound();
+        var user = _userRepository.GetUser(userId);
+        if (!ModelState.IsValid) return BadRequest(ModelState);
+        return Ok(FromUser(user));
+    }
+
+    [HttpPost]
+    [ProducesResponseType(201)]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(422)]
+    [ProducesResponseType(500)]
+    public IActionResult CreateUser([FromBody] UserDto userToCreate, [FromQuery] string userPassword)
+    {
+        if (_userRepository.UserExists(userToCreate.Email))
+        {
+            ModelState.AddModelError("", "User with that email address already exists.");
+            return StatusCode(422, ModelState);
+        }
+
+        if (!_userRepository.RegisterUser(userToCreate, userPassword))
+        {
+            ModelState.AddModelError("", $"Something went wrong saving the user");
+            return StatusCode(500, ModelState);
+        }
+        return Created("", "User successfully created.");
+    }
+
     private static UserDto FromUser(User user)
     {
         return new UserDto
@@ -51,7 +84,7 @@ public class UserController : Controller
             Name = userDto.Name,
             Handle = userDto.handle,
             Email = userDto.Email,
-            Password = userPassword,
+            // Password = userPassword,
             CreatedDate = userDto.CreatedDate,
             BirthDate = userDto.BirthDate,
             Posts = userDto.Posts

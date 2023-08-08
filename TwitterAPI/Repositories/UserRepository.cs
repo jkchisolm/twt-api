@@ -1,16 +1,21 @@
 using TwitterAPI.Data;
+using TwitterAPI.Dto;
 using TwitterAPI.Interfaces;
 using TwitterAPI.Models;
+using TwitterAPI.Services;
 
 namespace TwitterAPI.Repositories;
 
 public class UserRepository : IUserRepository
 {
     private readonly AppDbContext _context;
+    private readonly string _pepper;
 
     public UserRepository(AppDbContext context)
     {
         _context = context;
+        _pepper = Environment.GetEnvironmentVariable("PasswordHashPepper") 
+                  ?? throw new ArgumentNullException("PasswordHashPepper");
     }
     public ICollection<User> GetUsers()
     {
@@ -42,9 +47,19 @@ public class UserRepository : IUserRepository
         return _context.Users.Any(u => u.Email == email);
     }
 
-    public bool CreateUser(User user)
+    public bool RegisterUser(UserDto userInfo, string password)
     {
-        _context.Add(user);
+        var user = new User
+        {
+            Name = userInfo.Name,
+            Handle = userInfo.handle,
+            Email = userInfo.Email,
+            CreatedDate = DateTime.Now,
+            BirthDate = userInfo.BirthDate,
+            PasswordSalt = PasswordHasher.GenerateSalt()
+        };
+        user.PasswordHash = PasswordHasher.ComputeHash(password, user.PasswordSalt, _pepper, 3);
+        _context.Users.Add(user);
         return Save();
     }
 
@@ -60,6 +75,7 @@ public class UserRepository : IUserRepository
 
     public bool Save()
     {
-        throw new NotImplementedException();
+        var saved = _context.SaveChanges();
+        return saved > 0;
     }
 }
