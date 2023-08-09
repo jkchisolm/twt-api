@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using TwitterAPI.Dto;
 using TwitterAPI.Interfaces;
@@ -5,6 +6,7 @@ using TwitterAPI.Models;
 
 namespace TwitterAPI.Controllers;
 
+[Authorize]
 [Route("api/[controller]")]
 [ApiController]
 public class PostController : Controller

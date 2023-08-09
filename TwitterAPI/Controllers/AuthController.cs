@@ -62,6 +62,7 @@ public class AuthController : Controller
                 var authClaims = new List<Claim>
                 {
                     new Claim(ClaimTypes.Name, user.UserName),
+                    new Claim(ClaimTypes.PrimarySid, user.Id),
                     new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 };
 
@@ -116,13 +117,13 @@ public class AuthController : Controller
             Email = registerInfo.UserEmail,
             SecurityStamp = Guid.NewGuid().ToString(),
             UserName = registerInfo.UserName,
-            DisplayName = registerInfo.UserName,
+            DisplayName = registerInfo.DisplayName,
         };
 
         var result = await _userManager.CreateAsync(user, registerInfo.Password);
         if (!result.Succeeded)
         {
-            return StatusCode(500, "Something went wrong when creating the user.");
+            return StatusCode(500, result.Errors);
         }
 
         return Ok("User registered successfully.");
@@ -152,13 +153,13 @@ public class AuthController : Controller
             Email = registerInfo.UserEmail,
             SecurityStamp = Guid.NewGuid().ToString(),
             UserName = registerInfo.UserName,
-            DisplayName = registerInfo.UserName,
+            DisplayName = registerInfo.DisplayName,
         };
         var result = await _userManager.CreateAsync(user, registerInfo.Password);
         
         if (!result.Succeeded)
         {
-            return StatusCode(500, "Something went wrong when creating the user.");
+            return StatusCode(500, result.Errors);
         }
         
         if (!await _roleManager.RoleExistsAsync(UserRoles.Admin))
@@ -244,6 +245,29 @@ public class AuthController : Controller
         
         return Ok("User logged out successfully.");
     }
+    
+    [Authorize]
+    [HttpGet("me")]
+    [ProducesResponseType(200, Type = typeof(UserDto))]
+    [ProducesResponseType(400)]
+    [ProducesResponseType(404)]
+    public async Task<IActionResult> Me()
+    {
+        var userName = User.Identity?.Name;
+        var user = await _userManager.FindByNameAsync(userName);
+        if (user == null)
+        {
+            return BadRequest("Invalid client request");
+        }
+        
+        return Ok(new
+        {
+            user.DisplayName,
+            user.Email,
+            user.UserName,
+        });
+    }
+    
 
 
     private JwtSecurityToken CreateToken(List<Claim> authClaims)
