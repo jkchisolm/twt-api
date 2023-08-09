@@ -12,11 +12,16 @@ services:
     build:
       context: .
       dockerfile: TwitterAPI/Dockerfile
+    env_file:
+      - .env
     environment:
-      - ConnectionStrings__WebApiDatabase=User ID=postgres;Password=postgres;Host=app_db;Server=app_db;Port=5432;Database=TwitterDB;Integrated Security=true;Pooling=true;
-      - ASPNETCORE_URLS=http://+:80
-      - PasswordHashPepper=12345678901234567890123456789012
-      - Jwt__Secret=This is the secure key for the JWT token.
+      - ConnectionStrings__WebApiDatabase=${DBCONNECTIONSTRING}
+      - ASPNETCORE_URLS=${ASPNETCOREURLS}
+      - KeyVaultConfiguration__Vault=${VAULTURI}
+      - KeyVaultConfiguration__TenantId=${TENANTID}
+      - KeyVaultConfiguration__ClientId=${CLIENTID}
+      - KeyVaultConfiguration__ClientSecret=${CLIENTSECRET}
+      - Jwt__Secret=${JWTSECRET}
     networks:
       - dev
         

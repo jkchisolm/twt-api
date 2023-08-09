@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using TwitterAPI.Auth;
 using TwitterAPI.Dto;
+using TwitterAPI.Interfaces;
 using TwitterAPI.Models;
 using JwtRegisteredClaimNames = Microsoft.IdentityModel.JsonWebTokens.JwtRegisteredClaimNames;
 
@@ -20,14 +21,17 @@ public class AuthController : Controller
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
     private readonly IConfiguration _configuration;
+    private readonly ISecretHelper _secretHelper;
 
     public AuthController(UserManager<ApplicationUser> userManager, 
         RoleManager<IdentityRole> roleManager, 
-        IConfiguration configuration)
+        IConfiguration configuration,
+        ISecretHelper secretHelper)
     {
         _userManager = userManager;
         _roleManager = roleManager;
         _configuration = configuration;
+        _secretHelper = secretHelper;
     }
 
     [HttpPost("login")]
@@ -55,7 +59,7 @@ public class AuthController : Controller
                     return NotFound("User not found");
                 }
             }
-
+            
             if (await _userManager.CheckPasswordAsync(user, loginInfo.Password))
             {
                 var userRoles = await _userManager.GetRolesAsync(user);
@@ -71,7 +75,7 @@ public class AuthController : Controller
                     authClaims.Add(new Claim(ClaimTypes.Role, role));
                 }
 
-                var token = CreateToken(authClaims);
+                var token = await CreateToken(authClaims);
                 var refreshToken = GenerateRefreshToken();
                 
                 _ = int.TryParse(_configuration["JWT:RefreshTokenValidityInDays"], out int refreshTokenValidityInDays);
@@ -214,7 +218,7 @@ public class AuthController : Controller
             return BadRequest("Invalid access or refresh token.");
         }
 
-        var newAccessToken = CreateToken(principal.Claims.ToList());
+        var newAccessToken = await CreateToken(principal.Claims.ToList());
         var newRefreshToken = GenerateRefreshToken();
 
         user.RefreshToken = newRefreshToken;
@@ -270,9 +274,10 @@ public class AuthController : Controller
     
 
 
-    private JwtSecurityToken CreateToken(List<Claim> authClaims)
+    private async Task<JwtSecurityToken> CreateToken(List<Claim> authClaims)
     {
-        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JWT:Secret"]));
+        var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+            await _secretHelper.GetSecretAsync("JwtSecret")));
         _ = int.TryParse(_configuration["JWT:TokenValidityInMinutes"], out int tokenValidityInMinutes);
         
         var token = new JwtSecurityToken(

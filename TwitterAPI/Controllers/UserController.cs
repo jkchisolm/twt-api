@@ -13,11 +13,14 @@ public class UserController : Controller
 {
     private readonly IUserRepository _userRepository;
     private readonly UserManager<ApplicationUser> _userManager;
+    private readonly IConfiguration _configuration;
 
-    public UserController(IUserRepository userRepository, UserManager<ApplicationUser> userManager)
+    public UserController(IUserRepository userRepository, UserManager<ApplicationUser> userManager, 
+        IConfiguration configuration)
     {
         _userRepository = userRepository;
         _userManager = userManager;
+        _configuration = configuration;
     }
     
     [HttpGet]
