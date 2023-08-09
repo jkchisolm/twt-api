@@ -1,8 +1,8 @@
-[//]: # (<p align="center">)
+<p align="center">
 
-[//]: # (<img src="https://socialify.git.ci/jkchisolm/twt-backend/image?language=1&name=1&owner=1&pattern=Signal&stargazers=1&theme=Auto" alt="twt-backend" width="640" height="320" />)
+<img src="https://socialify.git.ci/jkchisolm/twt-api/image?language=1&name=1&owner=1&pattern=Signal&stargazers=1&theme=Auto" alt="twt-api" width="640" height="320" />
 
-[//]: # (</p>)
+</p>
 
 <p align="center">
   A backend powering a Twitter clone.
