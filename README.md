@@ -9,8 +9,7 @@
 </p>
 <p align="center">
 <img alt="GitHub Workflow Status" src="https://img.shields.io/github/actions/workflow/status/jkchisolm/twt-api/main.yml">
-<img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/jkchisolm/twt-api">
-<img alt="Website" src="https://img.shields.io/website?label=API&url=https%3A%2F%2Ftwt-api.jkchisolm.com">
+<img alt="GitHub last commit (branch)" src="https://img.shields.io/github/last-commit/jkchisolm/twt-api/main">
 </p>
 
 # 🌐 Website - Currently in progress
